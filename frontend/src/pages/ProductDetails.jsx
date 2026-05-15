@@ -2,7 +2,7 @@
 import { useParams, Link } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { CartContext } from "../context/CartContext";
-import axios from "axios";
+import api, { API_URL } from "../services/api";
 
 export default function ProductDetails() {
     const { id } = useParams();
@@ -14,7 +14,7 @@ export default function ProductDetails() {
     useEffect(() => {
         const fetchProduct = async () => {
             try {
-                const response = await axios.get(`http://localhost:5000/api/products/${id}`);
+                const response = await api.get(`/api/products/${id}`);
                 setProduct(response.data);
             } catch (error) {
                 console.error("Error loading product details:", error);
@@ -45,7 +45,7 @@ export default function ProductDetails() {
         <div className="p-10 md:p-20 flex flex-col md:flex-row gap-12 max-w-7xl mx-auto">
             <div className="flex-1 glass p-4 rounded-[2.5rem]">
                 <img
-                    src={product.image.startsWith('http') ? product.image : `http://localhost:5000${product.image}`}
+                    src={product.image.startsWith('http') ? product.image : `${API_URL}${product.image}`}
                     alt={product.name}
                     className="rounded-[2rem] w-full h-[600px] object-cover"
                 />

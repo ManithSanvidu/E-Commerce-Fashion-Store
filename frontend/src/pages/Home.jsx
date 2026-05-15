@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
-import axios from "axios";
+import api from "../services/api";
 import ProductCard from "../components/ProductCard";
 
 export default function Home() {
@@ -91,10 +91,7 @@ function TrendingNow() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/products");
-        setProducts(response.data);
-      } catch (error) {
-        console.error("Error fetching products:", error);
+        const response = await api.get("/api/products");
       } finally {
         setLoading(false);
       }

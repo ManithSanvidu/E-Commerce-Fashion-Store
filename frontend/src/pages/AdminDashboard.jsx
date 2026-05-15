@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useUser, useAuth } from "@clerk/clerk-react";
-import axios from "axios";
+import api from "../services/api";
 import { Navigate } from "react-router-dom";
 
 export default function AdminDashboard() {
@@ -34,7 +34,7 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       const token = await getToken();
-      const { data } = await axios.get("http://localhost:5000/api/orders/all", {
+      const { data } = await api.get("/api/orders/all", {
         headers: { Authorization: `Bearer ${token}` }
       });
       setOrders(data);
@@ -55,7 +55,7 @@ export default function AdminDashboard() {
         size: formData.size.split(",").map(s => s.trim())
       };
       
-      await axios.post("http://localhost:5000/api/products", productData, {
+      await api.post("/api/products", productData, {
         headers: { Authorization: `Bearer ${token}` }
       });
       

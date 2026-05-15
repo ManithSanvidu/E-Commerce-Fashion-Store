@@ -1,6 +1,6 @@
 import { useState, useMemo, useEffect } from "react";
 import ProductCard from "../components/ProductCard";
-import axios from "axios";
+import api from "../services/api";
 
 export default function Products() {
   const [apiProducts, setApiProducts] = useState([]);
@@ -13,7 +13,7 @@ export default function Products() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/products");
+        const response = await api.get("/api/products");
         setApiProducts(response.data);
       } catch (error) {
         console.error("Error fetching products:", error);

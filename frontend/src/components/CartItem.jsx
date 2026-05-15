@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import { CartContext } from "../context/CartContext";
+import { API_URL } from "../services/api";
 
 export default function CartItem({item}){
     const {removeFromCart}=useContext(CartContext);
@@ -8,7 +9,7 @@ export default function CartItem({item}){
         <div className="flex items-center justify-between py-2">
              <div className="flex items-center gap-6">
                 <img 
-                    src={item.image?.startsWith('http') ? item.image : `http://localhost:5000${item.image}`}
+                    src={item.image?.startsWith('http') ? item.image : `${API_URL}${item.image}`}
                     alt={item.name}
                     className="w-24 h-24 object-cover rounded-2xl shadow-lg border border-white/10"
                 />
