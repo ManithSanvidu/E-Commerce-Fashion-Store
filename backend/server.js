@@ -32,12 +32,17 @@ app.use("/api/users", userRoutes);
 app.use("/api/categories", categoryRoutes);
 app.use("/api/coupons", couponRoutes);
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
     res.send("API is running...")
 })
 
-const PORT=process.env.PORT || 5000;
+const PORT = process.env.PORT || 5000;
+const isServerless = process.env.VERCEL || process.env.NOW_REGION || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
-app.listen(PORT,()=>{
-    console.log(`Server running on port ${PORT}`)
-})
+if (!isServerless) {
+    app.listen(PORT, () => {
+        console.log(`Server running on port ${PORT}`)
+    })
+}
+
+export default app;
