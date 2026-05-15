@@ -1,0 +1,24 @@
+@import "tailwindcss";
+
+@theme {
+  --color-primary: #0a0a0b;
+  --color-gold: #d4af37;
+  --color-glass-bg: rgba(255, 255, 255, 0.1);
+  --color-glass-border: rgba(255, 255, 255, 0.2);
+  --radius-glass: 1.5rem;
+}
+
+@utility glass {
+  background: var(--color-glass-bg);
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  border: 1px solid var(--color-glass-border);
+}
+
+body {
+  background: radial-gradient(circle at top left, #1a1a2e, #16213e, #0f3460);
+  background-attachment: fixed;
+  color: #ffffff;
+  font-family: 'Outfit', sans-serif;
+  min-height: 100vh;
+}
