@@ -1,18 +1,26 @@
 import mongoose from "mongoose";
 
-const connectDB = async () => {
-    if (mongoose.connection.readyState >= 1) return;
+let connectionPromise = null;
 
-    try {
+const connectDB = async () => {
+    if (mongoose.connection.readyState === 1) return;
+    if (connectionPromise) return connectionPromise;
+
+    connectionPromise = (async () => {
         if (!process.env.MONGO_URI) {
             throw new Error("MONGO_URI is not defined in environment variables");
         }
-        await mongoose.connect(process.env.MONGO_URI);
+        await mongoose.connect(process.env.MONGO_URI, {
+            serverSelectionTimeoutMS: 10000,
+        });
         console.log("MongoDB Connected");
+    })();
+
+    try {
+        await connectionPromise;
     } catch (error) {
+        connectionPromise = null;
         console.error("DB Connection failed:", error.message);
-        // Do not call process.exit(1) in serverless environments
-        // Throwing error will let the function handler decide how to react
         throw error;
     }
 };

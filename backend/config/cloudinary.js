@@ -4,15 +4,26 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-if (!process.env.CLOUDINARY_CLOUD_NAME || !process.env.CLOUDINARY_API_KEY || !process.env.CLOUDINARY_API_SECRET) {
+const hasCloudinaryUrl = Boolean(process.env.CLOUDINARY_URL);
+const hasCloudinaryParts =
+  process.env.CLOUDINARY_CLOUD_NAME &&
+  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_SECRET;
+
+if (!hasCloudinaryUrl && !hasCloudinaryParts) {
   console.error("Cloudinary environment variables are missing!");
 } else {
   try {
-    cloudinary.config({
-      cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-      api_key: process.env.CLOUDINARY_API_KEY,
-      api_secret: process.env.CLOUDINARY_API_SECRET,
-    });
+    if (hasCloudinaryParts) {
+      cloudinary.config({
+        cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+        api_key: process.env.CLOUDINARY_API_KEY,
+        api_secret: process.env.CLOUDINARY_API_SECRET,
+        secure: true,
+      });
+    } else {
+      cloudinary.config({ secure: true });
+    }
     console.log("Cloudinary configured successfully");
   } catch (err) {
     console.error("Error configuring Cloudinary:", err);
