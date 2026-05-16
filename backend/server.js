@@ -27,6 +27,7 @@ app.use(cors({
     allowedHeaders: ["Content-Type", "Authorization"]
 }));
 app.use(express.json());
+const isServerless = process.env.VERCEL || process.env.NOW_REGION || process.env.AWS_LAMBDA_FUNCTION_NAME;
 const uploadDir = isServerless ? "/tmp" : path.join(__dirname, "uploads");
 app.use("/uploads", express.static(uploadDir));
 
@@ -41,8 +42,20 @@ app.get("/", (req, res) => {
     res.send("API is running...")
 })
 
+// Error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({
+        message: "Internal Server Error",
+        error: process.env.NODE_ENV === "production" ? {} : err.message
+    });
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+    console.error("Unhandled Rejection at:", promise, "reason:", reason);
+});
+
 const PORT = process.env.PORT || 5000;
-const isServerless = process.env.VERCEL || process.env.NOW_REGION || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
 if (!isServerless) {
     app.listen(PORT, () => {
