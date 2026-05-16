@@ -10,9 +10,17 @@ const api = axios.create({
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    console.error("API Error Detail:", {
+      message: error.message,
+      code: error.code,
+      config: error.config,
+      response: error.response
+    });
     if (!error.response) {
       error.message = `Network Error: could not reach backend at ${API_URL}.\n` +
-        `Check your VITE_API_URL environment variable and that the backend is deployed and CORS-enabled.`;
+        `1. Check if VITE_API_URL (${API_URL}) is correct.\n` +
+        `2. Ensure the backend is running and CORS is enabled.\n` +
+        `3. If you just deployed, wait a few minutes for the DNS to propagate.`;
     }
     return Promise.reject(error);
   }
