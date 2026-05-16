@@ -13,7 +13,7 @@ export const getProductById=async(req,res)=>{
 export const createProduct = async (req, res) => {
   try {
     const { name, price, category, description, sizes, section } = req.body;
-    const image = req.file ? `/uploads/${req.file.filename}` : "";
+    const image = req.file ? req.file.path : "";
 
     const product = await Product.create({
       name,
@@ -45,7 +45,7 @@ export const updateProduct = async (req, res) => {
       product.section = section || product.section;
 
       if (req.file) {
-        product.image = `/uploads/${req.file.filename}`;
+        product.image = req.file.path;
       }
 
       const updatedProduct = await product.save();
