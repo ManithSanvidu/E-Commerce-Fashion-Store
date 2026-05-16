@@ -1,11 +1,11 @@
 import {Link} from "react-router-dom";
-import { API_URL } from "../services/api";
+import { getImageUrl } from "../services/imageUrl";
 
 export default function ProductCard({product}){
     return(
         <div className="glass rounded-[2rem] overflow-hidden transition-all duration-500 hover:scale-[1.05] hover:shadow-[0_20px_50px_rgba(0,0,0,0.5)] group">
             <div className="relative overflow-hidden h-80">
-                <img src={product.image.startsWith('http') ? product.image : `${API_URL}${product.image}`} className="h-full w-full object-cover transition duration-700 group-hover:scale-110"/>
+                <img src={getImageUrl(product.image)} alt={product.name} className="h-full w-full object-cover transition duration-700 group-hover:scale-110"/>
                 {product.oldPrice && (
                     <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-lg animate-pulse">
                         -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
