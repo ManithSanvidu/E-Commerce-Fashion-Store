@@ -1,8 +1,8 @@
-/* eslint-disable react-hooks/purity */
 import { useParams, Link } from "react-router-dom";
 import { useContext, useState, useEffect } from "react";
 import { CartContext } from "../context/CartContext";
-import api, { API_URL } from "../services/api";
+import api from "../services/api";
+import { getImageUrl } from "../services/imageUrl";
 
 export default function ProductDetails() {
     const { id } = useParams();
@@ -45,7 +45,7 @@ export default function ProductDetails() {
         <div className="p-10 md:p-20 flex flex-col md:flex-row gap-12 max-w-7xl mx-auto">
             <div className="flex-1 glass p-4 rounded-[2.5rem]">
                 <img
-                    src={product.image.startsWith('http') ? product.image : `${API_URL}${product.image}`}
+                    src={getImageUrl(product.image)}
                     alt={product.name}
                     className="rounded-[2rem] w-full h-[600px] object-cover"
                 />
