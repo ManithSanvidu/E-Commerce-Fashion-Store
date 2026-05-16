@@ -27,8 +27,12 @@ app.use(cors({
 }));
 app.use(express.json());
 const isServerless = process.env.VERCEL || process.env.NOW_REGION || process.env.AWS_LAMBDA_FUNCTION_NAME;
-const uploadDir = isServerless ? "/tmp" : path.join(__dirname, "uploads");
-app.use("/uploads", express.static(uploadDir));
+const bundledUploadDir = path.join(__dirname, "uploads");
+app.use("/uploads", express.static(bundledUploadDir));
+
+if (isServerless) {
+    app.use("/uploads", express.static("/tmp"));
+}
 
 app.use("/api", async (req, res, next) => {
     try {
