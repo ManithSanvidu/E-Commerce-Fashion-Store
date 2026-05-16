@@ -1,6 +1,30 @@
 import axios from "axios";
 
-export const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
+const getApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL?.trim();
+  const isBrowser = typeof window !== "undefined";
+
+  if (envUrl) {
+    const isLocalhostApi =
+      envUrl.includes("localhost") || envUrl.includes("127.0.0.1");
+    const isProductionBrowser =
+      isBrowser && !["localhost", "127.0.0.1"].includes(window.location.hostname);
+
+    if (isLocalhostApi && isProductionBrowser) {
+      return window.location.origin;
+    }
+
+    return envUrl.replace(/\/$/, "");
+  }
+
+  if (isBrowser && !["localhost", "127.0.0.1"].includes(window.location.hostname)) {
+    return window.location.origin;
+  }
+
+  return "http://localhost:5000";
+};
+
+export const API_URL = getApiUrl();
 
 const api = axios.create({
   baseURL: API_URL,
