@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { X, Upload } from "lucide-react";
-import axios from "axios";
+import api, { API_URL } from "../../services/api";
 
 export default function AddProductModal({ isOpen, onClose, onProductAdded }) {
   const [formData, setFormData] = useState({
@@ -14,18 +14,24 @@ export default function AddProductModal({ isOpen, onClose, onProductAdded }) {
   const [image, setImage] = useState(null);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState([]);
+  const [categoryLoadFailed, setCategoryLoadFailed] = useState(false);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:5000/api/categories");
+        const response = await api.get("/api/categories");
         setCategories(response.data);
+        setCategoryLoadFailed(false);
       } catch (error) {
-        console.error("Error fetching categories:", error);
+        setCategoryLoadFailed(true);
+        console.error(`Error fetching categories from ${API_URL}/api/categories:`, error);
       }
     };
+
     fetchCategories();
-  }, []);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 
@@ -43,7 +49,7 @@ export default function AddProductModal({ isOpen, onClose, onProductAdded }) {
     if (image) data.append("image", image);
 
     try {
-      await axios.post("http://localhost:5000/api/products", data, {
+      await api.post("/api/products", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       onProductAdded();
@@ -52,7 +58,10 @@ export default function AddProductModal({ isOpen, onClose, onProductAdded }) {
       setImage(null);
     } catch (error) {
       console.error("Error adding product:", error);
-      alert("Failed to add product");
+      const userMessage = !error.response
+        ? `Network Error: Unable to reach backend at ${API_URL}.\nSet VITE_API_URL to your backend URL in the frontend project settings and redeploy.`
+        : (error.response?.data?.message || error.message || "Failed to add product");
+      alert(userMessage);
     } finally {
       setLoading(false);
     }
@@ -97,19 +106,30 @@ export default function AddProductModal({ isOpen, onClose, onProductAdded }) {
           <div className="grid md:grid-cols-2 gap-6">
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-400">Category</label>
-              <select
-                required
-                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-white/20 outline-none transition"
-                value={formData.category}
-                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-              >
-                <option value="" className="bg-[#111]">Select Category</option>
-                {categories.map((cat) => (
-                  <option key={cat._id} value={cat.name} className="bg-[#111]">
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
+              {categoryLoadFailed || categories.length === 0 ? (
+                <input
+                  required
+                  type="text"
+                  placeholder="Type category name"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-white/20 outline-none transition"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                />
+              ) : (
+                <select
+                  required
+                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 focus:border-white/20 outline-none transition"
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                >
+                  <option value="" className="bg-[#111]">Select Category</option>
+                  {categories.map((cat) => (
+                    <option key={cat._id} value={cat.name} className="bg-[#111]">
+                      {cat.name}
+                    </option>
+                  ))}
+                </select>
+              )}
             </div>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-400">Sizes (comma separated)</label>
