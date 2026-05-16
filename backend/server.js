@@ -17,7 +17,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
-connectDB().catch(err => console.error("Initial DB connection failed:", err.message));
 
 const app=express();
 
@@ -30,6 +29,18 @@ app.use(express.json());
 const isServerless = process.env.VERCEL || process.env.NOW_REGION || process.env.AWS_LAMBDA_FUNCTION_NAME;
 const uploadDir = isServerless ? "/tmp" : path.join(__dirname, "uploads");
 app.use("/uploads", express.static(uploadDir));
+
+app.use("/api", async (req, res, next) => {
+    try {
+        await connectDB();
+        next();
+    } catch (error) {
+        res.status(503).json({
+            message: "Database connection failed. Check the backend MONGO_URI environment variable and MongoDB Atlas network access.",
+            error: process.env.NODE_ENV === "production" ? undefined : error.message,
+        });
+    }
+});
 
 app.use("/api/products",productRoutes)
 app.use("/api/cart", cartRoutes);
