@@ -159,7 +159,7 @@ export default function Products() {
             {filteredProducts.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredProducts.map((p) => (
-                  <div key={p.id} className="animate-in fade-in zoom-in duration-500">
+                  <div key={p._id} className="animate-in fade-in zoom-in duration-500">
                     <ProductCard product={p} />
                   </div>
                 ))}
