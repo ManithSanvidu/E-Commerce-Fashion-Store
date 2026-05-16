@@ -14,12 +14,12 @@ import path from "path";
 
 import fs from "fs";
 
-// Ensure uploads directory exists locally
-if (!fs.existsSync("uploads")) {
+const isServerless = process.env.VERCEL || process.env.NOW_REGION || process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+// Ensure uploads directory exists locally (not on Vercel)
+if (!isServerless && !fs.existsSync("uploads")) {
   fs.mkdirSync("uploads");
 }
-
-const isServerless = process.env.VERCEL || process.env.NOW_REGION || process.env.AWS_LAMBDA_FUNCTION_NAME;
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
